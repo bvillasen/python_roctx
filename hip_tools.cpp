@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
-#include <roctx.h>
-#include <roctracer_ext.h>
+
+#include <rocprofiler-sdk-roctx/roctx.h>
 #include <hip/hip_runtime.h>
 
 #define CHECK(command) {   \
@@ -32,15 +32,25 @@ int set_device( int proc_id ) {
 }
 
 void start_roctracer(){
-  roctracer_start();
+  roctx_thread_id_t tid;
+  roctxGetThreadId(&tid);
+  roctxProfilerResume(tid);
+     //roctracer_start();
+}
+
+int get_roctx_tid(){
+  roctx_thread_id_t tid;
+  roctxGetThreadId(&tid);
+  return static_cast<int>(tid);
 }
 
 void stop_roctracer(){
-  roctracer_stop();
+  roctx_thread_id_t tid;
+  roctxGetThreadId(&tid);
+  roctxProfilerPause(tid);
 }
 
 int roctxr_start( char *c){
-  // std::cout << "Starting roctx marker: " << c << std::endl; 
   int id = roctxRangeStart(c);
   return id;
 }
